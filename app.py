@@ -2,7 +2,10 @@ from langchain_community.document_loaders import PyPDFLoader
 from pathlib import Path
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_qdrant import QdrantVectorStore
 from dotenv import load_dotenv
+
+
 
 load_dotenv()
 
@@ -27,10 +30,12 @@ def read_splitter(filename):
 #read_splitter("Practical NLP.pdf")
 
 ## Vector embeding
-def vector_embedding(chunks_data):
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
-    vector = embeddings.embed_query(chunks_data)
-    return vector
+embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
-ve=vector_embedding("hello, world!")
-print(ve[:5])
+
+vector_store=QdrantVectorStore.from_documents(
+    documents=read_splitter("Practical NLP.pdf"),
+    embedding=embeddings,
+    collection_name="learning_rag"
+)
+print(vector_store)
